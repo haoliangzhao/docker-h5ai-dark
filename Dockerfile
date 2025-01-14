@@ -7,7 +7,8 @@ RUN apk add --no-cache \
     bash bash-completion supervisor tzdata shadow \
     php82 php82-fpm php82-session php82-json php82-xml php82-mbstring php82-exif \
     php82-intl php82-gd php82-pecl-imagick php82-zip php82-opcache \
-    ffmpeg imagemagick zip apache2-utils patch
+    ffmpeg imagemagick zip apache2-utils patch \
+    curl
 
 # Environments
 ENV PUID=911
@@ -24,8 +25,9 @@ COPY config/php_set_jit.ini /etc/php82/conf.d/00_jit.ini
 COPY config/php_set_memory_limit.ini /etc/php82/conf.d/00_memlimit.ini
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Copy h5ai
+# Append dark theme code to styles.css and then copy files
 COPY config/_h5ai /usr/share/h5ai/_h5ai
+RUN curl -sSL https://raw.githubusercontent.com/RafaelDeJongh/h5ai-dark-theme/refs/heads/master/dark-theme.min.css >> /usr/share/h5ai/_h5ai/public/css/styles.css
 
 # Configure Nginx server
 RUN sed --in-place=.bak 's/worker_processes  1/worker_processes  auto/g' /etc/nginx/nginx.conf
